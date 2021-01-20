@@ -1,0 +1,58 @@
+- hosts: myweb
+  tasks:
+  - file:
+     state: directory
+     path: "/dvd"
+  - mount:
+     src: "/dev/cdrom"
+     path: "/dvd"
+     state: mounted
+     fstype: "iso9660"
+  - yum_repository:
+         baseurl: "/dvd/AppStream"
+         name: "mydvd1"
+         description: "myyum"
+         gpgcheck: no
+  - yum_repository:
+          baseurl: "/dvd/BaseOS"
+          name: "mydvd2"
+          description: "my mydvd2 package"
+          gpgcheck: no
+  - name: "install httpd rpm"
+    package:
+        name: "httpd"
+  - copy:
+      dest: "/var/www/html/index.html"
+      content: "I am testing my lb"
+  - service:
+      name: "httpd"
+      state: started
+- hosts: mylb
+  tasks:
+  - file:
+     state: directory
+     path: "/dvd"
+  - mount:
+     src: "/dev/cdrom"
+     path: "/dvd"
+     state: mounted
+     fstype: "iso9660"
+  - yum_repository:
+         baseurl: "/dvd/AppStream"
+         name: "mydvd1"
+         description: "myyum"
+         gpgcheck: no
+  - yum_repository:
+          baseurl: "/dvd/BaseOS"
+          name: "mydvd2"
+          description: "my mydvd2 package"
+          gpgcheck: no
+  - name: "install haproxy"
+    package: 
+       name : "haproxy"    
+  - template:
+        dest: "/etc/haproxy/haproxy.cfg"
+        src: "haproxy.cfg"
+  - service:
+        name: "haproxy"
+        state: started 

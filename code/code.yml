@@ -1,0 +1,14 @@
+- hosts: localhost
+  tasks:
+  - command: ls /tmp/janu123
+    register: s
+    ignore_errors: yes
+  - command: mkdir /tmp/janu123
+    register: x
+    ignore_errors: yes
+    when: s.rc != 0
+  - debug:
+      var: x
+  - debug:
+      msg: "end ..."
+ 

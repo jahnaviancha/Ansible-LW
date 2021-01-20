@@ -1,0 +1,25 @@
+- hosts: all
+  tasks:
+  - block:
+    - package: 
+         name: "httpd"
+         state: present
+    - get_url:
+         url: "https://www.dreamstime.com/merry-christmas-happy-new-year-greeting-card-two-cheerful-snowm%C3%B0%C2%B5n-standing-winter-landscape-snowmen-image101740163"  
+         dest: "/var/www/html/janu.jpg"
+    - service:
+         name: "httpd"
+         state: started
+    - debug:
+         msg: "this is a test ..."
+    rescue:
+    - copy:
+       dest: "/var/www/html/janu.jpg"
+       content: "Hello There"
+    - debug:
+         msg: "please rescue"
+    always:
+    - debug:
+         msg: "success"
+
+     

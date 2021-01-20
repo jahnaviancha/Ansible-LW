@@ -1,0 +1,42 @@
+---
+- hosts: all
+  vars_prompt:
+        - name: dvd_dir
+          private: no
+          prompt: "Enter dvd mount point"
+  tasks:
+  - file:
+     state: directory
+     path: "{{ dvd_dir }}"
+  - mount:
+     src: "/dev/sr0"
+     path: "{{ dvd_dir }}"
+     state: mounted
+     fstype: "iso9660"
+  - yum_repository:
+       baseurl: "{{ dvd_dir }}/AppStream"
+       name: "mydvd1"
+       description: "myyum dvd1 package"
+       gpgcheck: no
+  - yum_repository:
+       baseurl: "{{ dvd_dir }}/BaseOS"
+       name: "mydvd2"
+       description: "myyum dvd2 package"
+       gpgcheck: no
+  - package:
+       name: "httpd"
+       state: present 
+  - copy:
+       dest: "/var/www/html/index.html"
+       content: "This is my web site\n"
+  - service:
+       name: "httpd"
+       state: started
+       enabled: yes
+  - firewalld:
+       port: "8080/tcp"
+       state: enabled
+       permanent: yes
+       immediate: yes
+     
+ 

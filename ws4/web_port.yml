@@ -1,0 +1,46 @@
+- hosts: all
+  vars_files:
+       - http_var.yml
+  tasks:
+  - name: "create mount for the cdrom"
+    file: 
+      state: directory
+      path: "{{ dvd_dir }}"
+  - mount:
+       src: "/dev/cdrom"
+       path : "{{ dvd_dir }}"
+       state: mounted
+       fstype: "iso9660"
+  - yum_repository:
+       baseurl: "{{ dvd_dir }}/AppStream"
+       name: "mydvd1"
+       description: "myyum dvd1 for package"
+       gpgcheck: no
+  - yum_repository:
+        baseurl: "{{ dvd_dir }}/BaseOs"
+        name: "mydvd2"
+        description: "myyum dvd2 for package"
+        gpgcheck: no
+  - package:
+       name: "httpd"
+       state: present
+  - name: "Document root for web"
+    file:
+      state: directory
+r      path: "{{ doc_root }}"
+  - template:
+          dest: "/etc/httpd/conf.d/lw.conf"
+          src: "lw.conf"
+  - copy:
+          dest: "{{ doc_root }}/index.html"
+          content: " Hello Lenux World\n"
+  - service:
+       name: "httpd"
+       state: started
+       enabled: yes
+  - firewalld:
+        port: "{{ http_port }}/tcp"
+        state: disabled
+        immediate: yes
+        permanent: no
+

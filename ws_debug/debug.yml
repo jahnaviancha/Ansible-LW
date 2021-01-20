@@ -1,0 +1,6 @@
+- hosts: all
+  tasks:
+  - debug:
+      var: "{{ ansible_facts['distribution'] }}"
+  - debug:
+      msg: "my os name is {{ ansible_facts['distribution'] }}"
